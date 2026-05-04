@@ -1,0 +1,84 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
+def mean_squared_error(y_true, y_predicted):
+    cost = np.sum((y_true - y_predicted) ** 2) / len(y_true)
+    return cost
+
+def gradient_descent(x, y, iterations=1500, learning_rate=0.02, stopping_threshold=1e-6):
+    current_weight = 0.0
+    current_bias = 0.0
+    n = float(len(x))
+
+    costs = []
+    previous_cost = None
+
+    for i in range(iterations):
+        y_predicted = current_weight * x + current_bias
+        current_cost = mean_squared_error(y, y_predicted)
+
+     
+        if previous_cost and abs(previous_cost - current_cost) <= stopping_threshold:
+            break
+
+        previous_cost = current_cost
+        costs.append(current_cost)
+
+       
+        weight_derivative = -(2/n) * np.sum(x * (y - y_predicted))
+        bias_derivative = -(2/n) * np.sum(y - y_predicted)
+
+      
+        current_weight = current_weight - learning_rate * weight_derivative
+        current_bias = current_bias - learning_rate * bias_derivative
+
+        if i % 100 == 0:
+            print(f"Iteration {i+1}: Cost {current_cost:.4f}, Weight {current_weight:.4f}, Bias {current_bias:.4f}")
+
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(range(len(costs)), costs)
+    plt.title("Cost vs Iterations")
+    plt.xlabel("Iterations")
+    plt.ylabel("Cost")
+    plt.show()
+
+    return current_weight, current_bias
+
+
+def main():
+    
+    X = np.array([30.5, 50.4, 60.2, 45.3, 58.6, 54.2, 51.8, 38.5, 47.6, 51.9,
+                  44.8, 53.6, 43.2, 57.4, 55.9, 47.8, 43.9, 59.5, 44.7, 37.9])
+
+    Y = np.array([32.1, 67.5, 63.2, 70.2, 85.9, 77.3, 78.8, 58.4, 74.1, 70.5,
+                  56.2, 81.3, 61.4, 74.6, 80.2, 61.5, 81.7, 96.1, 49.6, 57.3])
+
+
+    scaler = StandardScaler()
+    X_normalized = scaler.fit_transform(X.reshape(-1, 1)).flatten()
+
+
+    estimated_weight, estimated_bias = gradient_descent(
+        X_normalized, Y, iterations=1500, learning_rate=0.02
+    )
+
+    print(f"Estimated Weight: {estimated_weight}")
+    print(f"Estimated Bias: {estimated_bias}")
+
+    Y_pred = estimated_weight * X_normalized + estimated_bias
+
+    # Plot
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X, Y, marker='*', label='Data Points')
+    plt.plot(X, Y_pred, linestyle='--', label='Fitted Line')
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.title("Linear Regression using Gradient Descent")
+    plt.legend()
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
