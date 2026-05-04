@@ -1,0 +1,12 @@
+import numpy as np
+import matplotlib.pyplot as plt
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+x = np.arange(-6, 6, 0.05)
+plt.plot(x, sigmoid(x), color='green')  # changed color
+plt.title('Visualization of the Sigmoid Function')
+plt.xlabel('Input')
+plt.ylabel('Output')
+plt.grid()
+plt.show()
